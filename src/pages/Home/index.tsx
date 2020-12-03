@@ -13,6 +13,7 @@ function MyForm(): JSX.Element {
   const [input, setInput] = useState('bitcoin')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<any>(false)
+  const [pastSearches, setPastSearches] = useState<string[]>([])
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value)
   }
@@ -21,8 +22,8 @@ function MyForm(): JSX.Element {
     const id = input
     console.log(id)
     setLoading(true);
+    setPastSearches(Array.from(new Set([...pastSearches, id])));
     const cryptoInfo = await fetch(`https://api.coingecko.com/api/v3/coins/${id}`, {
-      // mode: 'no-cors',
       headers: new Headers({ 'Content-Type': 'application/json', Accept: 'application/json' }),
     })
     return cryptoInfo
@@ -30,7 +31,6 @@ function MyForm(): JSX.Element {
 
   async function submit(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault()
-    console.log('Hi')
     const response = await fetchCryptoInfo()
     const cryptoInfo = await response.json()
     console.log(cryptoInfo)
@@ -40,22 +40,21 @@ function MyForm(): JSX.Element {
 
   return (
     <>
-      <form>
         {loading ? <ClipLoader
           size={150}
           color={"#123abc"}
           loading={loading}
-        /> : <><div>Please enter your CryptoID here!</div>
-        <input type="text" onChange={handleChange} value={input} />
-        <button type="submit" onClick={submit}>
-          Submit
-        </button> 
-        </>
+        /> :       
+        <form>
+          <p>Please enter your CryptoID here!</p>
+          <input type="text" onChange={handleChange} value={input} />
+          <button type="submit" onClick={submit}>
+            Submit
+          </button> 
+          {pastSearches.map((id)=>(<li key={id}>{id}</li>))}
+        </form>
         }
-      </form>
-      {
-        result && <Presentation crypto={result} />
-      }
+      {result && <Presentation crypto={result} />}
     </>
   )
 }
