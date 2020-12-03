@@ -12,7 +12,7 @@ function Home(): JSX.Element {
 function MyForm(): JSX.Element {
   const [input, setInput] = useState('bitcoin')
   const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState({})
+  const [result, setResult] = useState<any>(false)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value)
   }
@@ -51,10 +51,24 @@ function MyForm(): JSX.Element {
           Submit
         </button> 
         </>
-}
+        }
       </form>
+      {
+        result && <Presentation crypto={result} />
+      }
     </>
   )
+}
+
+function Presentation({crypto}:any):any{
+  return <div id="crypto-presentation">
+    <img src={crypto.image.thumb} alt={`${crypto.name} logo`}/> 
+    <h1>{crypto.name}</h1>
+    <h2>Market Cap Rank: {crypto.market_cap_rank} </h2>
+    <h3>Symbol: {crypto.symbol} </h3>
+    <p>Percentual 24h price change: {crypto.market_data.price_change_percentage_24h}</p>
+    <p>Current price in USD: {crypto.market_data.current_price.usd} </p>
+  </div>
 }
 
 export default Home
