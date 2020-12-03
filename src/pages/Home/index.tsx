@@ -48,21 +48,21 @@ function Main(): JSX.Element {
 
       const marketResponse = await fetchMarketInfo(id)
       const marketInfo = await marketResponse.json()
-      if ('error' in marketInfo) {
-        throw new Error(marketInfo.error)
-      }
-      setGraphData(marketInfo)
+      saveGraphData(marketInfo)
     } catch (error) {
       alert(error)
     }
   }
 
+  function saveGraphData(marketInfo: GraphData) {
+    if ('error' in marketInfo)
+      throw new Error('There was an error fetching the data to form the graph...')
+    setGraphData(marketInfo)
+  }
+
   function saveCryptoInfo(cryptoInfo: CryptoInfo) {
-    if ('error' in cryptoInfo) {
-      throw new Error(
-        'There was an error fetching the id - Probably this id does not exist... Try using lower case',
-      )
-    }
+    if ('error' in cryptoInfo)
+      throw new Error('Error fetching the id. Probably it does not  exist... Try using lower case!')
     setPastSearches(Array.from(new Set([...pastSearches, input])))
     setResult(cryptoInfo)
   }
@@ -72,14 +72,22 @@ function Main(): JSX.Element {
       {loading ? (
         <ClipLoader size={150} color={'#123abc'} loading={loading} />
       ) : (
-        <form>
-          <p>Please enter your CryptoID here!</p>
-          <input type="text" onChange={handleChange} value={input} />
-          <button type="submit" onClick={submit}>
-            Submit
-          </button>
-          <PastSearchesComponent searches={pastSearches} searchAgain={searchAndSaveCrypto} />
-        </form>
+        <div>
+          <form>
+            <p>Please enter your CryptoID here!</p>
+            <input type="text" onChange={handleChange} value={input} />
+            <button type="submit" onClick={submit}>
+              Submit
+            </button>
+          </form>
+          {result && (
+            <PastSearchesComponent
+              current={result.id}
+              searches={pastSearches}
+              searchAgain={searchAndSaveCrypto}
+            />
+          )}
+        </div>
       )}
       {result && <CryptoInfoComponent crypto={result} />}
       {graphData && <ChartPresentation graphData={graphData} />}

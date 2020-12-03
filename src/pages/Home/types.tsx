@@ -7,8 +7,10 @@ export interface CryptoInfo {
   name: string
   market_cap_rank: number
   symbol: string
+  id: string
 }
 export interface PastSearchesProps {
   searches: string[]
+  current: string
   searchAgain: (id: string) => Promise<void>
 }
